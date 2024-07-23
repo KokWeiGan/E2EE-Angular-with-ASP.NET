@@ -1,0 +1,32 @@
+<div class="container">
+  <!-- Display loading spinner -->
+  <div *ngIf="isLoading" class="loading-spinner">
+    <p>Loading...</p>
+  </div>
+
+  <!-- Display error message -->
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{errorMessage}}</p>
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage">
+    <p>Next Value : {{password}}</p> <!-- Display the randomly generated password -->
+    <br /><br /><br />
+
+    <p>Public Key PEM Format:</p>
+    <pre>{{publicKeyPem}}</pre>
+    <br /><br /><br />
+
+    <p>Encrypted Data:</p>
+    <pre>{{encryptedData}}</pre>
+    <br /><br /><br />
+
+    <p>Click Count: {{clickCount}}</p> <!-- Display the click count -->
+    <br /><br /><br />
+
+    <p>Decrypted Data (Click {{clickCount}}): {{decryptedData}}</p> <!-- Display the index before decrypted data -->
+    <br /><br /><br />
+
+    <button (click)="sendEncryptedData()" [disabled]="isLoading">Send Encrypted Data</button>
+  </div>
+</div>

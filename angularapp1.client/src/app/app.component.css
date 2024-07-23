@@ -1,0 +1,21 @@
+.container {
+  padding: 20px;
+}
+
+.loading-spinner {
+  text-align: center;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}
+
+pre {
+  white-space: pre-wrap; /* Preserve formatting for longer texts */
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
