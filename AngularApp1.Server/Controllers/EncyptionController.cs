@@ -8,7 +8,7 @@ namespace EncryptionApi.Controllers
     [ApiController]
     public class EncryptionController : ControllerBase
     {
-        private static RSA _rsa = RSA.Create(2048); // Initialize RSA once
+        private static readonly RSA _rsa = RSA.Create(2048); // Initialize RSA once
 
         // Endpoint to get the public key
         [HttpGet("publickey")]
@@ -22,7 +22,9 @@ namespace EncryptionApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                // Log the exception (You can integrate a logging library here)
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -34,14 +36,20 @@ namespace EncryptionApi.Controllers
             {
                 var encryptedData = Convert.FromBase64String(encryptedDataModel.Data);
 
-                var decryptedBytes = _rsa.Decrypt(encryptedData, RSAEncryptionPadding.OaepSHA256);
-                var decryptedText = Encoding.UTF8.GetString(decryptedBytes);
-
-                return Ok(new { DecryptedData = decryptedText });
+                // Ensure thread safety by creating a new RSA instance for decryption
+                using (var rsa = RSA.Create())
+                {
+                    rsa.ImportRSAPrivateKey(_rsa.ExportRSAPrivateKey(), out _);
+                    var decryptedBytes = rsa.Decrypt(encryptedData, RSAEncryptionPadding.OaepSHA256);
+                    var decryptedText = Encoding.UTF8.GetString(decryptedBytes);
+                    return Ok(new { DecryptedData = decryptedText });
+                }
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                // Log the exception (You can integrate a logging library here)
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, "Internal server error");
             }
         }
 
