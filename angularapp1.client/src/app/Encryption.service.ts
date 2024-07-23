@@ -7,8 +7,7 @@ import { Injectable } from '@angular/core';
 export class EncryptionService {
   private publicKey: CryptoKey | null = null;
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) { }
 
   // Fetch and import the public key, then return both PEM and imported key
   public async fetchPublicKey(): Promise<{ publicKeyPem: string, publicKey: CryptoKey | null }> {
@@ -47,7 +46,7 @@ export class EncryptionService {
       binaryDer,
       {
         name: 'RSA-OAEP',
-        hash: { name: 'SHA-256' },
+        hash: { name: 'SHA-256' }, // Specify SHA-256 here
       },
       true,
       ['encrypt']
@@ -92,6 +91,7 @@ export class EncryptionService {
       throw error;
     }
   }
+
   private arrayBufferToBase64(buffer: ArrayBuffer): string {
     let binary = '';
     const bytes = new Uint8Array(buffer);
@@ -101,7 +101,6 @@ export class EncryptionService {
     }
     return window.btoa(binary);
   }
-
 
   public async sendDataToServer(data: any, publicKey: CryptoKey | null): Promise<any> {
     if (!publicKey) {
@@ -119,21 +118,4 @@ export class EncryptionService {
       throw error; // Propagate the error
     }
   }
-}
-
-// Helper functions
-function str2ab(str: string): ArrayBuffer {
-  const buf = new ArrayBuffer(str.length);
-  const view = new Uint8Array(buf);
-  for (let i = 0; i < str.length; i++) {
-    view[i] = str.charCodeAt(i);
-  }
-  return buf;
-}
-
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  const uint8Array = new Uint8Array(buffer);
-  let binary = '';
-  uint8Array.forEach((byte) => binary += String.fromCharCode(byte));
-  return window.btoa(binary);
 }
