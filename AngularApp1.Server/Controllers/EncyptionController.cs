@@ -10,15 +10,13 @@ namespace EncryptionApi.Controllers
     {
         private static readonly RSA _rsa = RSA.Create(2048); // Initialize RSA once
 
-        // Endpoint to get the public key
-        [HttpGet("publickey")]
-        public IActionResult GetPublicKey()
+
+        [HttpGet("getkey")]
+        public IActionResult GetSecretKey()
         {
             try
             {
-                var publicKey = _rsa.ExportSubjectPublicKeyInfo(); // Export public key in binary format
-                var publicKeyPem = ConvertToPem(publicKey, "PUBLIC KEY");
-                return Ok(new { PublicKey = publicKeyPem });
+                return Ok(new { PublicKey = AsyncmetricEncyption.GetPublicKey(_rsa) });
             }
             catch (Exception ex)
             {
@@ -28,22 +26,32 @@ namespace EncryptionApi.Controllers
             }
         }
 
+
+
+        // Endpoint to get the public key
+        [HttpGet("publickey")]
+        public IActionResult GetPublicKey()
+        {
+            try
+            {
+                return Ok(new { PublicKey = AsyncmetricEncyption.GetPublicKey(_rsa) });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (You can integrate a logging library here)
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
         // Endpoint to decrypt the data
         [HttpPost("decrypt")]
         public IActionResult DecryptData([FromBody] EncryptedDataModel encryptedDataModel)
         {
             try
             {
-                var encryptedData = Convert.FromBase64String(encryptedDataModel.Data);
-
-                // Ensure thread safety by creating a new RSA instance for decryption
-                using (var rsa = RSA.Create())
-                {
-                    rsa.ImportRSAPrivateKey(_rsa.ExportRSAPrivateKey(), out _);
-                    var decryptedBytes = rsa.Decrypt(encryptedData, RSAEncryptionPadding.OaepSHA256);
-                    var decryptedText = Encoding.UTF8.GetString(decryptedBytes);
-                    return Ok(new { DecryptedData = decryptedText });
-                }
+                return Ok(new { DecryptedData = AsyncmetricEncyption.DecryptData(_rsa, encryptedDataModel.Data) });
             }
             catch (Exception ex)
             {
