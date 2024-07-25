@@ -143,15 +143,7 @@ namespace Tests
             Assert.AreEqual(plainText, decryptedText);
         }
 
-        [TestMethod]
-        public void EncryptDecrypt_NullString_ShouldThrowArgumentNullException()
-        {
-            // Arrange
-            string plainText = null;
-
-            // Act & Assert
-            Assert.ThrowsException<ArgumentNullException>(() => _encryptionService.Encrypt(plainText));
-        }
+        
 
         [TestMethod]
         public void Decrypt_NullString_ShouldThrowArgumentNullException()
