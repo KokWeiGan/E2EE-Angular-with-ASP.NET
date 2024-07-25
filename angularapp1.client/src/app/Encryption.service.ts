@@ -13,7 +13,7 @@ export class EncryptionService {
   public async fetchPublicKey(): Promise<{ publicKeyPem: string, publicKey: CryptoKey | null }> {
     try {
       // Fetch public key from the server
-      const response = await this.http.get<{ publicKey: string }>('https://localhost:7263/api/encryption/publickey').toPromise();
+      const response = await this.http.get<{ publicKey: string }>('/api/encryption/publickey').toPromise();
 
       // Check if response is not undefined and has the expected property
       if (response && response.publicKey) {
@@ -110,7 +110,7 @@ export class EncryptionService {
 
     try {
       const encryptedData = await this.encryptData(JSON.stringify(data), publicKey);
-      const response = await this.http.post<any>('https://localhost:7263/api/encryption/decrypt', { data: encryptedData }).toPromise();
+      const response = await this.http.post<any>('/api/encryption/decrypt', { data: encryptedData }).toPromise();
       console.log('Data sent to server');
       return response; // Return the server's response
     } catch (error) {
