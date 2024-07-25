@@ -36,10 +36,6 @@
             ],
             "styles": [
               "src/styles.css"
-            ],
-            "scripts": [
-              "node_modules/crypto-browserify/index.js",
-              "node_modules/stream-browserify/index.js"
             ]
           },
           "configurations": {

@@ -6,7 +6,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AngularApp1.Server", "Angul
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "angularapp1.client", "angularapp1.client\angularapp1.client.esproj", "{E2F8F385-034A-45B6-83BA-84DB106108F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularApp1.ServerTests1", "AngularApp1.ServerTests1\AngularApp1.ServerTests1.csproj", "{5C8C96E8-6ABA-4E20-96FE-2814AE3FCA02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AngularApp1.ServerTests1", "AngularApp1.ServerTests1\AngularApp1.ServerTests1.csproj", "{5C8C96E8-6ABA-4E20-96FE-2814AE3FCA02}"
 EndProject
 Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
