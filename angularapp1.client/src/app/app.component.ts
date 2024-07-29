@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
         const encryptedData = await this.encryptionService.encryptData(this.password, this.publicKey);
         this.encryptedData = encryptedData; // Update the encrypted data
 
-        const result = await this.encryptionService.sendDataToServer(this.password, this.publicKey);
+        const result = await this.encryptionService.sendDataToServer(this.password);
         this.decryptedData = result.decryptedData;
         console.log('Decrypted Data:', this.decryptedData);
       } else {

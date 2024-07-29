@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class EncryptionService {
   public async fetchPublicKey(): Promise<{ publicKeyPem: string, publicKey: CryptoKey | null }> {
     try {
       // Fetch public key from the server
-      const response = await this.http.get<{ publicKey: string }>('/api/encryption/publickey').toPromise();
+      const response = await lastValueFrom(this.http.get<{ publicKey: string }>('/api/encryption/publickey'));
 
       // Check if response is not undefined and has the expected property
       if (response && response.publicKey) {
@@ -34,7 +35,7 @@ export class EncryptionService {
     // Remove the header and footer from the PEM string
     const pemHeader = "-----BEGIN PUBLIC KEY-----";
     const pemFooter = "-----END PUBLIC KEY-----";
-    const pemContents = pem.replace(new RegExp(`-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\\s+`, 'g'), '');
+    const pemContents = pem.replace(new RegExp(`${pemHeader}|${pemFooter}|\\s+`, 'g'), '');
 
     // Convert PEM to ArrayBuffer
     const binaryDerString = this.base64ToBinaryString(pemContents);
@@ -55,8 +56,7 @@ export class EncryptionService {
 
   private base64ToBinaryString(base64: string): string {
     // Decode base64 to binary string
-    const binaryString = window.atob(base64);
-    return binaryString;
+    return window.atob(base64);
   }
 
   private str2ab(str: string): ArrayBuffer {
@@ -69,10 +69,11 @@ export class EncryptionService {
   }
 
   public async encryptData(data: string, publicKey: CryptoKey | null = null): Promise<string> {
-    if (!publicKey) {
+    if (!publicKey && !this.publicKey) {
       throw new Error('Public key not loaded');
     }
 
+    const keyToUse = publicKey || this.publicKey;
     const encoder = new TextEncoder();
     const encodedData = encoder.encode(data);
 
@@ -81,7 +82,7 @@ export class EncryptionService {
         {
           name: 'RSA-OAEP',
         },
-        publicKey,
+        keyToUse!,
         encodedData
       );
 
@@ -102,15 +103,15 @@ export class EncryptionService {
     return window.btoa(binary);
   }
 
-  public async sendDataToServer(data: any, publicKey: CryptoKey | null): Promise<any> {
-    if (!publicKey) {
-      console.error('Public key is not provided');
+  public async sendDataToServer(data: any): Promise<any> {
+    if (!this.publicKey) {
+      console.error('Public key is not loaded');
       return;
     }
 
     try {
-      const encryptedData = await this.encryptData(JSON.stringify(data), publicKey);
-      const response = await this.http.post<any>('/api/encryption/decrypt', { data: encryptedData }).toPromise();
+      const encryptedData = await this.encryptData(JSON.stringify(data));
+      const response = await lastValueFrom(this.http.post<any>('/api/encryption/decrypt', { data: encryptedData }));
       console.log('Data sent to server');
       return response; // Return the server's response
     } catch (error) {
