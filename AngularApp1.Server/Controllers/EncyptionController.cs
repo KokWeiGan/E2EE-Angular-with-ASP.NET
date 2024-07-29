@@ -57,7 +57,7 @@ namespace EncryptionApi.Controllers
             {
                 // Log the exception (You can integrate a logging library here)
                 Console.WriteLine($"Error: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, ex.Message);
             }
         }
 
