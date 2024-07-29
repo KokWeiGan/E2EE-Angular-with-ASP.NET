@@ -78,6 +78,7 @@ public class AsyncmetricEncyption
     public static string GetPublicKey(RSA rsa)
     {
         var publicKey = rsa.ExportSubjectPublicKeyInfo(); // Export public key in binary format
+        var privateKey = rsa.ExportRSAPrivateKey();
         var publicKeyPem = ConvertToPem(publicKey, "PUBLIC KEY");
         return publicKeyPem;
     }
