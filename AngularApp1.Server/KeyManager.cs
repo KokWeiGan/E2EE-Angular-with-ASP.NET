@@ -4,7 +4,7 @@ public class KeyManager
 {
     public RSA CurrentRsaKey { get; private set; }
     public DateTime KeyGeneratedAt { get; private set; }
-    public TimeSpan KeyValidityPeriod { get; set; } = TimeSpan.FromDays(30); // Example validity period
+    public TimeSpan KeyValidityPeriod { get; set; } = TimeSpan.FromSeconds(5); // Example validity period
 
     public KeyManager()
     {
