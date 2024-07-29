@@ -18,6 +18,7 @@ namespace Tests
             KeyGenerator.GenerateKeyAndIv(out base64Key, out base64Iv);
             _encryptionService = new EncryptionService(base64Key, base64Iv);
         }
+
         [TestMethod]
         public void GetPublicKey_ShouldReturnPublicKey()
         {
@@ -58,8 +59,9 @@ namespace Tests
             var invalidBase64Data = "InvalidBase64String";
 
             // Act & Assert
-            Assert.ThrowsException<FormatException>(() => AsyncmetricEncyption.DecryptData(_rsa,invalidBase64Data));
+            Assert.ThrowsException<FormatException>(() => AsyncmetricEncyption.DecryptData(_rsa, invalidBase64Data));
         }
+
         [TestMethod]
         public void Encrypt_ShouldReturnEncryptedString()
         {
@@ -143,8 +145,6 @@ namespace Tests
             Assert.AreEqual(plainText, decryptedText);
         }
 
-        
-
         [TestMethod]
         public void Decrypt_NullString_ShouldThrowArgumentNullException()
         {
@@ -153,6 +153,87 @@ namespace Tests
 
             // Act & Assert
             Assert.ThrowsException<ArgumentNullException>(() => _encryptionService.Decrypt(cipherText));
+        }
+
+        [TestMethod]
+        public void EncryptDecrypt_LargeData_ShouldReturnOriginalString()
+        {
+            // Arrange
+            var plainText = new string('A', 10000); // Large string of 10,000 characters
+
+            // Act
+            var encryptedText = _encryptionService.Encrypt(plainText);
+            var decryptedText = _encryptionService.Decrypt(encryptedText);
+
+            // Assert
+            Assert.AreEqual(plainText, decryptedText);
+        }
+
+        [TestMethod]
+        public void EncryptDecrypt_DifferentDataTypes_ShouldHandleProperly()
+        {
+            // Arrange
+            var plainTextInt = 12345.ToString();
+            var plainTextBool = true.ToString();
+
+            // Act
+            var encryptedTextInt = _encryptionService.Encrypt(plainTextInt);
+            var decryptedTextInt = _encryptionService.Decrypt(encryptedTextInt);
+            var encryptedTextBool = _encryptionService.Encrypt(plainTextBool);
+            var decryptedTextBool = _encryptionService.Decrypt(encryptedTextBool);
+
+            // Assert
+            Assert.AreEqual(plainTextInt, decryptedTextInt);
+            Assert.AreEqual(plainTextBool, decryptedTextBool);
+        }
+
+        [TestMethod]
+        public void Decrypt_InvalidBase64String_ShouldThrowFormatException()
+        {
+            // Arrange
+            var invalidBase64Data = "InvalidBase64String";
+
+            // Act & Assert
+            Assert.ThrowsException<FormatException>(() => AsyncmetricEncyption.DecryptData(_rsa, invalidBase64Data));
+        }
+
+        [TestMethod]
+        public void GetPublicKey_ShouldReturnValidFormat()
+        {
+            // Act
+            var publicKey = AsyncmetricEncyption.GetPublicKey(_rsa);
+
+            // Assert
+            Assert.IsTrue(publicKey.StartsWith("-----BEGIN PUBLIC KEY-----"));
+            Assert.IsTrue(publicKey.EndsWith("-----END PUBLIC KEY-----"));
+            Assert.IsTrue(publicKey.Length > 50); // Ensure it has some content
+        }
+
+        [TestMethod]
+        public void EncryptDecrypt_Whitespace_ShouldReturnOriginalString()
+        {
+            // Arrange
+            var plainText = "    "; // String with whitespace
+
+            // Act
+            var encryptedText = _encryptionService.Encrypt(plainText);
+            var decryptedText = _encryptionService.Decrypt(encryptedText);
+
+            // Assert
+            Assert.AreEqual(plainText, decryptedText);
+        }
+
+        [TestMethod]
+        public void EncryptData_ShouldHandleLargeData()
+        {
+            // Arrange
+            var largeData = new string('B', 50000); // Large data string of 50,000 characters
+
+            // Act
+            var encryptedData = _encryptionService.Encrypt(largeData);
+
+            // Assert
+            Assert.IsFalse(string.IsNullOrEmpty(encryptedData));
         }
     }
 }

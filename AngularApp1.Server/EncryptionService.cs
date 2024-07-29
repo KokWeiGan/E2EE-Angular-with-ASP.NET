@@ -98,6 +98,6 @@ public class AsyncmetricEncyption
         sb.AppendLine($"-----BEGIN {keyType}-----");
         sb.AppendLine(Convert.ToBase64String(keyBytes, Base64FormattingOptions.InsertLineBreaks));
         sb.AppendLine($"-----END {keyType}-----");
-        return sb.ToString();
+        return sb.ToString().TrimEnd();
     }
 }
